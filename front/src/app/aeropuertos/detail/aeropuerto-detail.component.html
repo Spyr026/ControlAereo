@@ -1,0 +1,69 @@
+<div class="container mt-4" *ngIf="aeropuerto">
+  <!-- Tarjeta principal del aeropuerto -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title">{{ aeropuerto.nombre }}</h2>
+      <p class="card-text"><strong>Código IATA:</strong> {{ aeropuerto.codigoIATA }}</p>
+      <p class="card-text"><strong>Ciudad:</strong> {{ aeropuerto.ciudad }}</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Tarjeta de aviones -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-header bg-primary text-white">
+          Aviones en el aeropuerto
+        </div>
+        <div class="card-body">
+          <ul *ngIf="aeropuerto.aviones?.length; else noAviones">
+            <li *ngFor="let avion of aeropuerto.aviones">
+              {{ avion.matricula }} - {{ avion.modelo }} ({{ avion.aerolinea }})
+            </li>
+          </ul>
+          <ng-template #noAviones>
+            <p>No hay aviones en este aeropuerto.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta de vuelos que salen -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-header bg-success text-white">
+          Vuelos que salen
+        </div>
+        <div class="card-body">
+          <ul *ngIf="aeropuerto.vuelosOrigen?.length; else noVuelosOrigen">
+            <li *ngFor="let vuelo of aeropuerto.vuelosOrigen">
+              {{ vuelo.numeroVuelo }} a {{ vuelo.aeropuertoDestino?.nombre }}
+            </li>
+          </ul>
+          <ng-template #noVuelosOrigen>
+            <p>No hay vuelos de salida.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta de vuelos que llegan -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-header bg-info text-white">
+          Vuelos que llegan
+        </div>
+        <div class="card-body">
+          <ul *ngIf="aeropuerto.vuelosDestino?.length; else noVuelosDestino">
+            <li *ngFor="let vuelo of aeropuerto.vuelosDestino">
+              {{ vuelo.numeroVuelo }} desde {{ vuelo.aeropuertoOrigen?.nombre }}
+            </li>
+          </ul>
+          <ng-template #noVuelosDestino>
+            <p>No hay vuelos de llegada.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

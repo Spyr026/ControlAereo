@@ -1,0 +1,158 @@
+<div class="container mt-4" *ngIf="aeropuerto">
+
+ 
+  <!-- Tarjeta principal del aeropuerto -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+
+    <!-- Botón habilitar edición -->
+      <div class="d-flex justify-content-end mb-3">
+      <button class="btn btn-lg" [ngClass]="edicionHabilitada ? 'btn-success' : 'btn-warning'"
+        (click)="edicionHabilitada = !edicionHabilitada">
+        <i class="bi bi-pencil"></i>
+        {{ edicionHabilitada ? '...' : '' }}
+      </button>
+    </div>
+
+      <ng-container *ngIf="edicionHabilitada; else soloLectura">
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Aeropuerto:</div>
+          <div class="col-8">
+            <input type="text" class="form-control border-3 border-success shadow-sm" [(ngModel)]="aeropuerto.nombre"
+              name="nombre" required>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Código IATA:</div>
+          <div class="col-8">
+            <input type="text" class="form-control border-3 border-success shadow-sm"
+              [(ngModel)]="aeropuerto.codigoIATA" name="codigoIATA" maxlength="3" required>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Ciudad:</div>
+          <div class="col-6">
+            <input type="text" class="form-control border-3 border-success shadow-sm" [(ngModel)]="aeropuerto.ciudad"
+              name="ciudad" required>
+          </div>
+        </div>
+        <button type="button" class="btn btn-success mt-2" (click)="guardarCambiosAeropuerto()">
+          Guardar cambios
+        </button>
+      </ng-container>
+      <ng-template #soloLectura>
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Aeropuerto:</div>
+          <div class="col-8">{{ aeropuerto.nombre }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Código IATA:</div>
+          <div class="col-8">{{ aeropuerto.codigoIATA }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Ciudad:</div>
+          <div class="col-6">{{ aeropuerto.ciudad }}</div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-4 fw-bold">Máximo aviones:</div>
+          <div class="col-6">{{ aeropuerto.maximoAviones }}</div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Tarjeta de aviones -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          Aviones en el aeropuerto
+          <button class="btn btn-warning btn-sm" (click)="modoEdicionAviones = !modoEdicionAviones">
+            <i class="bi bi-pencil"></i>
+            {{ modoEdicionAviones ? '' : '' }}
+          </button>
+        </div>
+        <div class="card-body">
+          <ul *ngIf="aeropuerto.aviones?.length; else noAviones">
+            <li *ngFor="let avion of aeropuerto.aviones" class="d-flex align-items-center justify-content-between">
+              <span>{{ avion.matricula }} - {{ avion.modelo }} ({{ avion.aerolinea }})</span>
+              <button *ngIf="modoEdicionAviones" class="btn btn-danger btn-sm ms-2"
+                (click)="eliminarAvionDelAeropuerto(avion)"><i class="bi bi-trash"></i></button>
+            </li>
+          </ul>
+          <ng-template #noAviones>
+            <p>No hay aviones en este aeropuerto.</p>
+          </ng-template>
+          <button *ngIf="modoEdicionAviones" class="btn btn-success mt-3" data-bs-toggle="modal"
+            data-bs-target="#popupAviones" (click)="abrirPopupAviones()">
+            <i class="bi bi-plus"></i> Añadir avión disponible
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta de vuelos que salen -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-header bg-success text-white">
+          Vuelos que salen
+        </div>
+        <div class="card-body">
+          <ul *ngIf="aeropuerto.vuelosOrigen?.length; else noVuelosOrigen">
+            <li *ngFor="let vuelo of aeropuerto.vuelosOrigen">
+              {{ vuelo.numeroVuelo }} a {{ vuelo.aeropuertoDestino?.nombre }} - 
+              {{ vuelo.fechaSalida | date:'short' }}
+            </li>
+          </ul>
+          <ng-template #noVuelosOrigen>
+            <p>No hay vuelos de salida.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta de vuelos que llegan -->
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        <div class="card-header bg-info text-white">
+          Vuelos que llegan
+        </div>
+        <div class="card-body">
+          <ul *ngIf="aeropuerto.vuelosDestino?.length; else noVuelosDestino">
+            <li *ngFor="let vuelo of aeropuerto.vuelosDestino">
+              {{ vuelo.numeroVuelo }} desde {{ vuelo.aeropuertoOrigen?.nombre }} - 
+              {{ vuelo.fechaLlegada | date:'short' }}
+            </li>
+          </ul>
+          <ng-template #noVuelosDestino>
+            <p>No hay vuelos de llegada.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para seleccionar avión -->
+<div class="modal fade" id="popupAviones" tabindex="-1" aria-labelledby="popupAvionesLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="popupAvionesLabel">Añadir avión al hangar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <ul *ngIf="avionesDisponibles?.length; else noDisponibles">
+          <li *ngFor="let avion of avionesDisponibles">
+            <td> {{ avion.matricula }} - {{ avion.modelo }} ({{ avion.aerolinea }})
+            <button class="btn btn-success btn-sm ms-2" (click)="agregarAvionAlAeropuerto(avion)">+</button>
+          </td>
+          </li>
+        </ul>
+        <ng-template #noDisponibles>
+          <p>No hay aviones disponibles.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

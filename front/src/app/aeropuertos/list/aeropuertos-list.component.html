@@ -1,0 +1,119 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-4">Listado de Aeropuertos</h2>
+
+    <!-- Botón para abrir el modal de aeropuerto -->
+    <button class="btn btn-success" (click)="abrirModalAeropuerto()" data-bs-toggle="modal"
+      data-bs-target="#modalAeropuerto">
+      <i class="bi bi-plus"></i> Añadir Aeropuerto
+    </button>
+  </div>
+
+  <!-- Modal para añadir aeropuerto -->
+  <div class="modal fade" id="modalAeropuerto" tabindex="-1" aria-labelledby="modalAeropuertoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalAeropuertoLabel">Añadir Aeropuerto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form #formAeropuerto="ngForm" (ngSubmit)="guardarAeropuerto()">
+            <!-- Nombre -->
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="nuevoAeropuerto.nombre"
+                required>
+            </div>
+            <!-- Ciudad -->
+            <div class="mb-3">
+              <label for="ciudad" class="form-label">Ciudad</label>
+              <input type="text" class="form-control" id="ciudad" name="ciudad" [(ngModel)]="nuevoAeropuerto.ciudad"
+                required (ngModelChange)="onCiudadChange()">
+              <div *ngIf="!isIataEditable && nuevoAeropuerto.ciudad">
+                <small class="form-text text-info">Código IATA sugerido: {{ nuevoAeropuerto.codigoIATA }}</small>
+              </div>
+            </div>
+            <!-- Campo IATA con checkbox para habilitar -->
+            <div class="mb-3">
+              <label for="iata" class="form-label">Código IATA</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="iata" name="iata" [(ngModel)]="nuevoAeropuerto.codigoIATA"
+                  [disabled]="!isIataEditable" maxlength="3">
+                <span class="input-group-text">
+                  <input type="checkbox" [(ngModel)]="isIataEditable" name="isIataEditable"
+                    (change)="onIataCheckboxChange()" />
+                  <span class="ms-1">Editar</span>
+                </span>
+              </div>
+              <small class="form-text text-muted">Los codigos IATA son dados por la Asociación Internacional de
+                Transporte Aéreo (IATA). Esto es una Demo.</small>
+            </div>
+            <!-- Capacidad -->
+            <div class="mb-3">
+              <label for="capacidad" class="form-label">Capacidad del Hangar</label>
+              <input type="number" class="form-control" id="capacidad" name="capacidad"
+                [(ngModel)]="nuevoAeropuerto.maximoAviones" required min="1">
+            </div>
+            <button type="submit" class="btn btn-success" [disabled]="formAeropuerto.invalid">Guardar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-2">
+      <table class="table table-sm table-striped table-bordered align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th class="text-center">Nombre</th>
+            <th class="text-center">Ciudad</th>
+            <th class="text-center">Código IATA</th>
+            <th class="text-center">Editar</th>
+            <th class="text-center">Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let aeropuerto of aeropuertos">
+            <td class="text-center">{{ aeropuerto.nombre }}</td>
+            <td class="text-center">{{ aeropuerto.ciudad }}</td>
+            <td class="text-center">{{ aeropuerto.codigoIATA }}</td>
+            <td class="text-center">
+              <a [routerLink]="['/aeropuertos', aeropuerto.id, 'editar']" class="btn btn-warning btn-sm" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </a>
+            </td>
+            <td class="text-center">
+              <button (click)="abrirModalEliminar(aeropuerto)" class="btn btn-danger btn-sm" title="Eliminar"
+                data-bs-toggle="modal" data-bs-target="#modalConfirmarEliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+
+            <!-- Modal de confirmación de eliminación -->
+            <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1"
+              aria-labelledby="modalConfirmarEliminarLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalConfirmarEliminarLabel">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                  </div>
+                  <div class="modal-body">
+                    Estas a punto de eliminar el aeropuerto de <strong>{{ aeropuertoAEliminar?.nombre }}</strong>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger"
+                      (click)="eliminarAeropuerto(aeropuertoAEliminar?.id)">Eliminar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

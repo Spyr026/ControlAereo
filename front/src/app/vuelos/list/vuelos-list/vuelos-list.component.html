@@ -1,0 +1,155 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-4">Listado de Vuelos</h2>
+    <button class="btn btn-success" (click)="abrirModalVuelo()" data-bs-toggle="modal" data-bs-target="#modalVuelo">
+      <i class="bi bi-plus"></i> Añadir Vuelo
+    </button>
+  </div>
+  <div class="modal fade" id="modalVuelo" tabindex="-1" aria-labelledby="modalVueloLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalVueloLabel">Añadir Vuelo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form #formVuelo="ngForm" (ngSubmit)="guardarVuelo()">
+            <!-- Número de Vuelo -->
+            <div class="mb-3">
+              <label for="numeroVuelo" class="form-label">Número de Vuelo</label>
+              <input type="text" class="form-control" id="numeroVuelo" name="numeroVuelo"
+                [(ngModel)]="nuevoVuelo.numeroVuelo"
+                (ngModelChange)="getAvionesDisponibles()"
+                required>
+            </div>
+            <!-- Aeropuerto Origen -->
+            <div class="mb-3">
+              <label for="aeropuertoOrigen" class="form-label">Aeropuerto Origen</label>
+              <select class="form-control" id="aeropuertoOrigen" name="aeropuertoOrigen"
+                [(ngModel)]="nuevoVuelo.aeropuertoOrigen" required>
+                <option [ngValue]="null">-- Selecciona aeropuerto --</option>
+                <option *ngFor="let aeropuerto of aeropuertosDisponibles" [ngValue]="aeropuerto">
+                  {{ aeropuerto.nombre }} ({{ aeropuerto.codigoIATA }})
+                </option>
+              </select>
+            </div>
+            <!-- Aeropuerto Destino -->
+            <div class="mb-3">
+              <label for="aeropuertoDestino" class="form-label">Aeropuerto Destino</label>
+              <select class="form-control" id="aeropuertoDestino" name="aeropuertoDestino"
+                [(ngModel)]="nuevoVuelo.aeropuertoDestino"
+                (ngModelChange)="getAvionesDisponibles()"
+                required>
+                <option [ngValue]="null">-- Selecciona aeropuerto --</option>
+                <option *ngFor="let aeropuerto of aeropuertosDisponibles" [ngValue]="aeropuerto">
+                  {{ aeropuerto.nombre }} ({{ aeropuerto.codigoIATA }})
+                </option>
+              </select>
+            </div>
+            <!-- Estado -->
+            <div class="mb-3">
+              <label for="estado" class="form-label">Estado</label>
+              <select class="form-control" id="estado" name="estado" 
+              [(ngModel)]="nuevoVuelo.estado"
+              (ngModelChange)="getAvionesDisponibles()" 
+              required>
+                <option value="PROGRAMADO">Programado</option>
+                <option value="EN_VUELO">En vuelo</option>
+                <option value="FINALIZADO">Finalizado</option>
+              </select>
+            </div>
+            <!-- Fecha Salida -->
+            <div class="mb-3">
+              <label for="fechaSalida" class="form-label">Fecha de Salida</label>
+              <input (ngModelChange)="onFechaSalidaChange(); getAvionesDisponibles()" type="date" class="form-control" id="fechaSalida"
+                name="fechaSalida" [(ngModel)]="nuevoVuelo.fechaSalida" [min]="hoy" [max]="nuevoVuelo.fechaLlegada"
+                required>
+              <div *ngIf="codigoErrorFechaSalida !== 0" class="text-danger">
+                {{ mensajeErrorFechaSalida }}
+              </div>
+            </div>
+            <!-- Hora Salida -->
+            <div class="mb-3">
+              <label for="horaSalida" class="form-label">Hora de Salida</label>
+              <input (ngModelChange)="onHoraSalidaChange(); getAvionesDisponibles()" type="time" class="form-control" id="horaSalida"
+                name="horaSalida" [(ngModel)]="nuevoVuelo.horaSalida" [min]="minHoraSalida" required>
+              <div *ngIf="codigoErrorHoraSalida !== 0" class="text-danger">
+                {{ mensajeErrorHoraSalida }}
+              </div>
+            </div>
+            <!-- Fecha Llegada -->
+            <div class="mb-3">
+              <label for="fechaLlegada" class="form-label">Fecha de Llegada</label>
+              <input (ngModelChange)="onFechaLlegadaChange(); getAvionesDisponibles()" type="date" class="form-control" id="fechaLlegada"
+                name="fechaLlegada" [(ngModel)]="nuevoVuelo.fechaLlegada" [min]="nuevoVuelo.fechaSalida" required>
+              <div *ngIf="codigoErrorFechaLlegada !== 0" class="text-danger">
+                {{ mensajeErrorFechaLlegada }}
+              </div>
+            </div>
+            <!-- Hora Llegada -->
+            <div class="mb-3">
+              <label for="horaLlegada" class="form-label">Hora de Llegada</label>
+              <input (ngModelChange)="onHoraLlegadaChange(); getAvionesDisponibles()" type="time" class="form-control" id="horaLlegada"
+                name="horaLlegada" [(ngModel)]="nuevoVuelo.horaLlegada" [min]="nuevoVuelo.horaSalida" required>
+              <div *ngIf="codigoErrorHoraLlegada !== 0" class="text-danger">
+                {{ mensajeErrorHoraLlegada }}
+              </div>
+            </div>
+
+            <!-- Avión -->
+            <div class="mb-3">
+              <label for="avion" class="form-label">Avión</label>
+              <select class="form-control" id="avion" name="avion" 
+              [(ngModel)]="nuevoVuelo.avion"
+              >
+                <option [ngValue]="null">-- Selecciona avión (opcional) --</option>
+                <option *ngFor="let avion of avionesDisponibles" [ngValue]="avion">
+                  {{ avion.modelo }} - {{ avion.matricula }}
+                </option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-success" [disabled]="formVuelo.invalid">Guardar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card shadow-sm">
+    <div class="card-body p-2">
+      <table class="table table-sm table-striped table-bordered align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th class="text-center">Numero de Vuelo</th>
+            <th class="text-center">Ciudad Origen</th>
+            <th class="text-center">Ciudad Destino</th>
+            <th class="text-center">Dia</th>
+            <th class="text-center">Hora</th>
+            <th class="text-center">Editar</th>
+            <th class="text-center">Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vuelo of vuelos">
+            <td class="text-center">{{ vuelo.numeroVuelo }}</td>
+            <td class="text-center">{{ vuelo.aeropuertoOrigen?.nombre + ' (' + vuelo.aeropuertoOrigen?.codigoIATA + ')'
+              }}</td>
+            <td class="text-center">{{ vuelo.aeropuertoDestino?.nombre + ' (' + vuelo.aeropuertoDestino?.codigoIATA +
+              ')' }}</td>
+            <td class="text-center">{{ vuelo.fechaSalida }}</td>
+            <td class="text-center">{{ vuelo.horaSalida }}</td>
+            <td class="text-center">
+              <a [routerLink]="['/vuelos', vuelo.id]" class="btn btn-warning btn-sm" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </a>
+            </td>
+            <td class="text-center">
+              <button (click)="eliminarVuelo(vuelo.id)" class="btn btn-danger btn-sm" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

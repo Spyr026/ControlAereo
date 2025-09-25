@@ -1,0 +1,109 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Listado de Aviones</h2>
+    <button class="btn btn-success" (click)="getAeropuertosConEspacio()" data-bs-toggle="modal" data-bs-target="#modalAvion">
+      <i class="bi bi-plus"></i> Añadir Avión
+    </button>
+  </div>
+
+  <!-- Modal para añadir avión -->
+<div class="modal fade" id="modalAvion" tabindex="-1" aria-labelledby="modalAvionLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAvionLabel">Añadir Avión</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- formulario para añadir avión -->
+        <form #formAvion="ngForm" (ngSubmit)="guardarAvion()">
+          <!-- Campos del formulario -->
+           <!-- Matricula -->
+          <div class="mb-3">
+            <label for="matricula" class="form-label">Matrícula</label>
+            <input type="text" class="form-control" id="matricula" name="matricula" [(ngModel)]="nuevoAvion.matricula"
+              required>
+          </div>
+          <!-- Modelo -->
+          <div class="mb-3">
+            <label for="modelo" class="form-label">Modelo</label>
+            <input type="text" class="form-control" id="modelo" name="modelo" [(ngModel)]="nuevoAvion.modelo" required>
+          </div>
+          <!-- Aerolinea -->
+          <div class="mb-3">
+            <label for="aerolinea" class="form-label">Aerolínea</label>
+            <input type="text" class="form-control" id="aerolinea" name="aerolinea" [(ngModel)]="nuevoAvion.aerolinea"
+              required>
+          </div>
+          <!-- Capacidad -->
+          <div class="mb-3">
+            <label for="capacidad" class="form-label">Capacidad</label>
+            <input type="number" class="form-control" id="capacidad" name="capacidad" [(ngModel)]="nuevoAvion.capacidad"
+              required min="1">
+          </div>
+          <!-- Estado -->
+          <div class="mb-3">
+            <label for="estado" class="form-label">Estado</label>
+            <select class="form-control" id="estado" name="estado" [(ngModel)]="nuevoAvion.estado" required>
+              <option value="EN_TIERRA">En tierra</option>
+              <option value="EN_VUELO">En vuelo</option>
+              <option value="MANTENIMIENTO">Mantenimiento</option>
+              
+            </select>
+            <small class="form-text text-muted">Selecciona el estado del avión.</small>
+          </div>
+          <!-- Aeropuerto -->
+          <div class="mb-3">
+            <label for="aeropuerto" class="form-label">Aeropuerto</label>
+            <select type="text" class="form-control" id="aeropuerto" name="aeropuerto" [(ngModel)]="nuevoAvion.aeropuerto">
+              <option [ngValue]="null">-- Selecciona un aeropuerto (opcional) --</option>
+              <option *ngFor="let aeropuerto of aeropuertosConEspacio" [ngValue]="aeropuerto">{{ aeropuerto.nombre }}</option>
+            </select>
+          </div>
+
+          <!-- Campo aeropuerto (opcional) -->
+          <button type="submit" class="btn btn-success" [disabled]="formAvion.invalid">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Tabla de Aviones -->
+  <div class="card shadow-sm">
+    <div class="card-body p-2">
+      <table class="table table-sm table-striped table-bordered align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th class="text-center">Modelo</th>
+            <th class="text-center">Matrícula</th>
+            <th class="text-center">Aerolínea</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Editar</th>
+            <th class ="text-center">Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let avion of aviones">
+            <td class="text-center">{{ avion.modelo }}</td>
+            <td class="text-center">{{ avion.matricula }}</td>
+            <td class="text-center">{{ avion.aerolinea }}</td>
+            <td class="text-center">{{ avion.estado | estadoAvion }}</td>
+            <td class="text-center">
+              <a [routerLink]="['/aviones', avion.id]" class="btn btn-warning btn-sm" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </a>
+            </td>
+            <td class="text-center">
+              <button (click)="eliminarAvion(avion)" class="btn btn-danger btn-sm" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,83 @@
+<nav class="navbar navbar-expand-lg navbar-light sticky-top" style="background-color: #e3f2fd;">
+  <div class="container-fluid">
+    <a routerLink="/">
+      <img src="/assets/images/ATC_main_image.png" width="50" height="70" alt="">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAeropuertos" data-bs-toggle="dropdown"
+            aria-expanded="false" routerLink="/aeropuertos">Aeropuertos
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownAeropuertos">
+            <!-- Submenú Detalles Aeropuerto... -->
+            <li class="dropdown-submenu">
+              <a class="dropdown-item dropdown-toggle" href="#"
+                (click)="$event.preventDefault(); toggleSubmenu()">Detalles Aeropuerto...</a>
+              <ul class="dropdown-menu" *ngIf="submenuOpen">
+                <li *ngFor="let aeropuerto of aeropuertos" class="dropdown-submenu">
+                  <a class="dropdown-item dropdown-toggle" href="#" [routerLink]="['/aeropuertos', aeropuerto.id, 'editar']"
+                    (click)="closeMenus(); aeropuerto.id !== undefined && toggleAeropuertoSubmenu(aeropuerto.id)">
+                    {{ aeropuerto.nombre }} ({{ aeropuerto.codigoIATA }})
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAviones" data-bs-toggle="dropdown"
+            aria-expanded="false" routerLink="/aviones">Aviones
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownAviones">
+            <li class="dropdown-submenu">
+              <a class="dropdown-item dropdown-toggle" href="#"
+                (click)="$event.preventDefault(); toggleSubmenuAviones()">Detalles Avión...</a>
+              <ul class="dropdown-menu" *ngIf="submenuOpenAviones">
+                <li *ngFor="let avion of aviones" class="dropdown-submenu">
+                  <a class="dropdown-item dropdown-toggle" href="#" [routerLink]="['/aviones', avion.id]"
+                    (click)="closeMenus(); avion.id !== undefined && toggleAvionSubmenu(avion.id)">
+                    {{ avion.matricula }} ({{ avion.modelo }})
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownVuelos" data-bs-toggle="dropdown"
+            aria-expanded="false" routerLink="/vuelos">Vuelos
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownVuelos">
+            <li class="dropdown-submenu">
+              <a class="dropdown-item dropdown-toggle" href="#"
+                (click)="$event.preventDefault(); toggleSubmenuVuelos()">Detalles Vuelo...</a>
+              <ul class="dropdown-menu" *ngIf="submenuOpenVuelos">
+                <li *ngFor="let vuelo of vuelos" class="dropdown-submenu">
+                  <a class="dropdown-item dropdown-toggle" href="#" [routerLink]="['/vuelos', vuelo.id]"
+                    (click)="closeMenus(); vuelo.id !== undefined && toggleVueloSubmenu(vuelo.id)">
+                    {{ vuelo.numeroVuelo }} ({{ vuelo.aeropuertoOrigen?.nombre }} → {{ vuelo.aeropuertoDestino?.nombre }})
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+
+
+  </div>
+</nav>
